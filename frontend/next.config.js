@@ -5,11 +5,15 @@ const nextConfig = {
   output: 'standalone',
   images: {
     domains: ['localhost'],
-    // Adicionar domínio do Koyeb quando disponível
+    // Domínios permitidos para imagens
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '*.koyeb.app',
+      },
+      {
+        protocol: 'https',
+        hostname: 'facial.alltechbr.com',
       },
     ],
   },
