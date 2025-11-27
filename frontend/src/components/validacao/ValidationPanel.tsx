@@ -100,7 +100,12 @@ export function ValidationPanel({ videoRef, canvasRef, webcam }: ValidationPanel
       lastValidationRef.current = now;
 
       // Usar fetch diretamente para melhor controle
-      fetch('/api/validate', {
+      // Em produção, usar URL completa se disponível
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL 
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/validate`
+        : '/api/validate';
+      
+      fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

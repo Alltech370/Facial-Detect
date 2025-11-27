@@ -20,9 +20,17 @@ export function ConnectionTest() {
       ? 'http://localhost:8000' 
       : '');
   
+  // Em produção, usar a URL completa se disponível, senão usar URL relativa
+  const getApiUrl = (path: string) => {
+    if (backendUrl) {
+      return `${backendUrl}${path}`;
+    }
+    // Em produção sem NEXT_PUBLIC_API_URL, tentar usar URL relativa (rewrites)
+    return path;
+  };
+  
   const [tests, setTests] = useState<ConnectionTest[]>([
-    { name: 'Backend API', url: '/api/stats', status: 'idle' },
-    ...(backendUrl ? [{ name: 'Backend Direct', url: `${backendUrl}/api/stats`, status: 'idle' as const }] : []),
+    { name: 'Backend API', url: getApiUrl('/api/stats'), status: 'idle' },
     { name: 'Frontend', url: '/', status: 'idle' },
   ]);
 
@@ -32,7 +40,9 @@ export function ConnectionTest() {
     ));
 
     try {
-      const response = await fetch(test.url);
+      // Usar URL completa se disponível, senão usar relativa
+      const url = test.url.startsWith('http') ? test.url : getApiUrl(test.url);
+      const response = await fetch(url);
       if (response.ok) {
         setTests(prev => prev.map(t => 
           t.name === test.name ? { ...t, status: 'success' } : t
