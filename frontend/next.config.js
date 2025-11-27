@@ -13,11 +13,14 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config) => {
+  webpack: (config, { dir }) => {
+    // Resolver path aliases - usar dir do contexto do Next.js
+    const srcPath = path.join(dir, 'src');
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve(__dirname, './src'),
+      '@': srcPath,
     };
+    
     return config;
   },
   async rewrites() {
