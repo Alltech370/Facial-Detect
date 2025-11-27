@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
@@ -10,6 +12,13 @@ const nextConfig = {
         hostname: '*.koyeb.app',
       },
     ],
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, './src'),
+    };
+    return config;
   },
   async rewrites() {
     // Em produção na Vercel, deixar o vercel.json fazer os rewrites
