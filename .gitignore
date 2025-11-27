@@ -129,3 +129,6 @@ Desktop.ini
 *.backup
 *~
 
+#misc
+migration_postgres.md
+setup_neon.md

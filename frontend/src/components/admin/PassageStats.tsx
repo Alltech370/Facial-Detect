@@ -69,14 +69,14 @@ export function PassageStats() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Estatísticas do Sistema</CardTitle>
-        <CardDescription>
+      <CardHeader className="px-4 sm:px-6">
+        <CardTitle className="text-lg sm:text-xl">Estatísticas do Sistema</CardTitle>
+        <CardDescription className="text-sm sm:text-base">
           Visão geral das métricas do sistema de reconhecimento facial
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <CardContent className="px-4 sm:px-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {statsData.map((stat, index) => {
             const Icon = stat.icon;
             
@@ -93,8 +93,8 @@ export function PassageStats() {
                     <Icon className={`h-6 w-6 ${stat.color}`} />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
-                <p className="text-sm text-muted-foreground">{stat.title}</p>
+                <h3 className="text-xl sm:text-2xl font-bold mb-1">{stat.value}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">{stat.title}</p>
               </motion.div>
             );
           })}

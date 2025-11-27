@@ -10,15 +10,15 @@ export default function AdminPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-1 container py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4">Painel Administrativo</h1>
-          <p className="text-muted-foreground">
+      <main className="flex-1 container py-4 sm:py-6 md:py-8 px-4 sm:px-6">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Painel Administrativo</h1>
+          <p className="text-sm sm:text-base text-muted-foreground px-4">
             Gerencie usuários, visualize logs e estatísticas do sistema
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Estatísticas de Passagens */}
           <PassageStats />
 

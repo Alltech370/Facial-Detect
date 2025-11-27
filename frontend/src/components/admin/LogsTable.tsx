@@ -66,36 +66,37 @@ export function LogsTable() {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
+      <CardHeader className="px-4 sm:px-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <History className="h-5 w-5" />
-            <CardTitle>Logs de Acesso</CardTitle>
+            <History className="h-4 w-4 sm:h-5 sm:w-5" />
+            <CardTitle className="text-lg sm:text-xl">Logs de Acesso</CardTitle>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <select
               value={limit}
               onChange={(e) => setLimit(Number(e.target.value))}
-              className="px-3 py-2 border border-input rounded-md bg-background text-sm"
+              className="px-3 py-2 border border-input rounded-md bg-background text-sm flex-1 sm:flex-initial"
             >
               <option value={20}>Últimos 20</option>
               <option value={50}>Últimos 50</option>
               <option value={100}>Últimos 100</option>
             </select>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <Button variant="outline" size="sm" onClick={() => refetch()} className="flex-1 sm:flex-initial">
               <RefreshCw className="h-4 w-4 mr-2" />
-              Atualizar
+              <span className="hidden sm:inline">Atualizar</span>
             </Button>
           </div>
         </div>
-        <CardDescription>
+        <CardDescription className="text-sm sm:text-base">
           Histórico de tentativas de acesso ao sistema
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
-        <div className="rounded-md border">
-          <Table>
+      <CardContent className="px-4 sm:px-6">
+        <div className="rounded-md border overflow-x-auto -mx-4 sm:mx-0">
+          <div className="inline-block min-w-full align-middle">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Data/Hora</TableHead>
@@ -160,11 +161,12 @@ export function LogsTable() {
                 ))
               )}
             </TableBody>
-          </Table>
-        </div>
+              </Table>
+            </div>
+          </div>
 
         {/* Summary */}
-        <div className="mt-4 text-sm text-muted-foreground">
+        <div className="mt-4 text-xs sm:text-sm text-muted-foreground">
           Mostrando {logs?.length || 0} log(s) mais recente(s)
         </div>
       </CardContent>

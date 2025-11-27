@@ -27,15 +27,15 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-4">Recursos Principais</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
+    <section className="py-6 sm:py-8 md:py-12">
+      <div className="text-center mb-6 sm:mb-8 md:mb-12 px-4">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4">Recursos Principais</h2>
+        <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
           Tecnologia avançada para garantir segurança e eficiência no controle de acesso
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
         {features.map((feature, index) => {
           const Icon = feature.icon;
           
@@ -48,12 +48,12 @@ export function FeaturesSection() {
               whileHover={{ y: -5 }}
             >
               <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-background to-muted/20">
-                <CardHeader className="text-center">
-                  <div className="mx-auto mb-4 p-4 rounded-full bg-gradient-to-r from-primary/10 to-primary/5">
-                    <Icon className="h-8 w-8 text-primary" />
+                <CardHeader className="text-center px-4 sm:px-6">
+                  <div className="mx-auto mb-3 sm:mb-4 p-3 sm:p-4 rounded-full bg-gradient-to-r from-primary/10 to-primary/5">
+                    <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                   </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-lg sm:text-xl">{feature.title}</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">
                     {feature.description}
                   </CardDescription>
                 </CardHeader>

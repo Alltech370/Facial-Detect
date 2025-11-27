@@ -112,18 +112,18 @@ export function AdminActions() {
 
   return (
     <Card className="border-red-200 bg-red-50/50">
-      <CardHeader>
+      <CardHeader className="px-4 sm:px-6">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-red-600" />
-          <CardTitle className="text-red-800">Ações Administrativas</CardTitle>
+          <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
+          <CardTitle className="text-lg sm:text-xl text-red-800">Ações Administrativas</CardTitle>
         </div>
-        <CardDescription className="text-red-700">
+        <CardDescription className="text-sm sm:text-base text-red-700">
           Ações que afetam permanentemente os dados do sistema
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <CardContent className="px-4 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {actionGroups.map((group, groupIndex) => {
             const GroupIcon = group.icon;
             

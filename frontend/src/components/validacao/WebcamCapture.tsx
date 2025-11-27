@@ -25,17 +25,17 @@ export function WebcamCapture({
 
   return (
     <Card className="w-full">
-      <CardHeader>
+      <CardHeader className="px-4 sm:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Video className="h-5 w-5" />
-            <CardTitle>Câmera</CardTitle>
+            <Video className="h-4 w-4 sm:h-5 sm:w-5" />
+            <CardTitle className="text-lg sm:text-xl">Câmera</CardTitle>
           </div>
-          <Badge variant={webcam.isActive ? 'default' : 'secondary'}>
+          <Badge variant={webcam.isActive ? 'default' : 'secondary'} className="text-xs sm:text-sm">
             {webcam.isActive ? 'LIVE' : 'OFF'}
           </Badge>
         </div>
-        <CardDescription>
+        <CardDescription className="text-sm sm:text-base">
           {webcam.isActive 
             ? 'Câmera ativa - posicione-se em frente à tela'
             : 'Clique em "Iniciar Câmera" para começar a validação'
@@ -43,10 +43,10 @@ export function WebcamCapture({
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         <div className="space-y-4">
           {/* Video Container */}
-          <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+          <div className="relative bg-black rounded-lg overflow-hidden aspect-video w-full">
             <video
               ref={videoRef}
               className="w-full h-full object-cover"

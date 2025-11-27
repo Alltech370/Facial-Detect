@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libxrender1 \
     libgomp1 \
+    libpq-dev \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar Miniforge (cache layer)

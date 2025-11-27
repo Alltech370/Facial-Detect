@@ -101,45 +101,46 @@ export function ConnectionTest() {
   };
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Wifi className="h-5 w-5" />
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader className="px-4 sm:px-6">
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <Wifi className="h-4 w-4 sm:h-5 sm:w-5" />
           Teste de Conectividade
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm sm:text-base">
           Verifique se o frontend está conectado corretamente ao backend
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 px-4 sm:px-6">
         <div className="flex gap-2">
-          <Button onClick={runAllTests} className="flex items-center gap-2">
+          <Button onClick={runAllTests} className="flex items-center gap-2 w-full sm:w-auto">
             <Wifi className="h-4 w-4" />
-            Testar Todas as Conexões
+            <span className="text-sm sm:text-base">Testar Todas as Conexões</span>
           </Button>
         </div>
 
         <div className="space-y-3">
           {tests.map((test) => (
-            <div key={test.name} className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
+            <div key={test.name} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 sm:p-4 border rounded-lg">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
                 {getStatusIcon(test.status)}
-                <div>
-                  <p className="font-medium">{test.name}</p>
-                  <p className="text-sm text-muted-foreground">{test.url}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-sm sm:text-base truncate">{test.name}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">{test.url}</p>
                   {test.error && (
-                    <p className="text-sm text-red-600">{test.error}</p>
+                    <p className="text-xs sm:text-sm text-red-600 truncate">{test.error}</p>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                 {getStatusBadge(test.status)}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => runTest(test)}
                   disabled={test.status === 'testing'}
+                  className="text-xs sm:text-sm"
                 >
                   {test.status === 'testing' ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
@@ -152,9 +153,9 @@ export function ConnectionTest() {
           ))}
         </div>
 
-        <div className="mt-4 p-3 bg-muted rounded-lg">
-          <h4 className="font-medium mb-2">Como resolver problemas:</h4>
-          <ul className="text-sm text-muted-foreground space-y-1">
+        <div className="mt-4 p-3 sm:p-4 bg-muted rounded-lg">
+          <h4 className="font-medium mb-2 text-sm sm:text-base">Como resolver problemas:</h4>
+          <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
             <li>• <strong>Backend não conecta:</strong> Execute <code>python backend/app/main.py</code></li>
             <li>• <strong>Frontend não conecta:</strong> Execute <code>cd frontend && npm run dev</code></li>
             <li>• <strong>API não acessível:</strong> Verifique se o backend está rodando na porta 8000</li>

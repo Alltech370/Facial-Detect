@@ -81,18 +81,18 @@ export function RegisterForm() {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <UserPlus className="h-5 w-5" />
+      <CardHeader className="px-4 sm:px-6">
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
           Formulário de Cadastro
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm sm:text-base">
           Preencha os dados abaixo para cadastrar um novo usuário no sistema
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <CardContent className="px-4 sm:px-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
           {/* Nome */}
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">
@@ -131,7 +131,7 @@ export function RegisterForm() {
             <label className="text-sm font-medium">Foto do Rosto</label>
             
             <div
-              className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+              className={`relative border-2 border-dashed rounded-lg p-4 sm:p-6 md:p-8 text-center transition-colors ${
                 dragActive
                   ? 'border-primary bg-primary/5'
                   : 'border-muted-foreground/25 hover:border-primary/50'
@@ -148,13 +148,13 @@ export function RegisterForm() {
                 onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
               />
               
-              <div className="space-y-4">
-                <Upload className="h-12 w-12 mx-auto text-muted-foreground" />
+              <div className="space-y-2 sm:space-y-4">
+                <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 mx-auto text-muted-foreground" />
                 <div>
-                  <p className="text-lg font-medium">
+                  <p className="text-base sm:text-lg font-medium">
                     Clique aqui ou arraste uma foto
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Formatos: JPG, PNG, BMP (máx. 10MB)
                   </p>
                 </div>
@@ -182,7 +182,7 @@ export function RegisterForm() {
                     alt="Preview"
                     width={300}
                     height={200}
-                    className="max-w-xs max-h-48 rounded-lg border object-cover"
+                    className="w-full max-w-xs sm:max-w-sm max-h-48 sm:max-h-64 rounded-lg border object-cover"
                   />
                   <Button
                     type="button"

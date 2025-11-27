@@ -91,29 +91,29 @@ export function UsersTable() {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
+      <CardHeader className="px-4 sm:px-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            <CardTitle>Usuários Cadastrados</CardTitle>
+            <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+            <CardTitle className="text-lg sm:text-xl">Usuários Cadastrados</CardTitle>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" onClick={() => refetch()} className="flex-1 sm:flex-initial">
               <RefreshCw className="h-4 w-4 mr-2" />
-              Atualizar
+              <span className="hidden sm:inline">Atualizar</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExportUsers}>
+            <Button variant="outline" size="sm" onClick={handleExportUsers} className="flex-1 sm:flex-initial">
               <Download className="h-4 w-4 mr-2" />
-              Exportar
+              <span className="hidden sm:inline">Exportar</span>
             </Button>
           </div>
         </div>
-        <CardDescription>
+        <CardDescription className="text-sm sm:text-base">
           Gerencie os usuários cadastrados no sistema
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         <div className="space-y-4">
           {/* Search */}
           <div className="flex items-center space-x-2">
@@ -121,13 +121,14 @@ export function UsersTable() {
               placeholder="Buscar usuários..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
+              className="w-full sm:max-w-sm"
             />
           </div>
 
-          {/* Table */}
-          <div className="rounded-md border">
-            <Table>
+          {/* Table with horizontal scroll on mobile */}
+          <div className="rounded-md border overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
@@ -202,11 +203,12 @@ export function UsersTable() {
                   ))
                 )}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
           </div>
 
           {/* Summary */}
-          <div className="text-sm text-muted-foreground">
+          <div className="text-xs sm:text-sm text-muted-foreground">
             Total: {filteredUsers.length} usuário(s)
             {searchTerm && ` (filtrado de ${users?.length || 0})`}
           </div>

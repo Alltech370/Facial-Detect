@@ -52,7 +52,15 @@ ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY", "facial_detect_demo_key_2024")  # E
 AES_KEY_LENGTH = 32  # 256 bits
 
 # Configurações do banco de dados
-DATABASE_URL = f"sqlite:///{DATA_DIR}/database.db"
+# PostgreSQL (Neon) - OBRIGATÓRIO em produção
+# Defina a variável de ambiente DATABASE_URL no Koyeb
+# Formato: postgresql://user:password@host:port/dbname
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError(
+        "DATABASE_URL não configurada! "
+        "Configure a variável de ambiente DATABASE_URL com a connection string do PostgreSQL (Neon)."
+    )
 
 # Configurações da API
 API_HOST = "0.0.0.0"

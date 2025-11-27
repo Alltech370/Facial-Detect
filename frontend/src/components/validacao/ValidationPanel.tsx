@@ -206,17 +206,17 @@ export function ValidationPanel({ videoRef, canvasRef, webcam }: ValidationPanel
 
   return (
     <Card className="w-full">
-      <CardHeader>
+      <CardHeader className="px-4 sm:px-6">
         <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5" />
-          <CardTitle>Status da Validação</CardTitle>
+          <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
+          <CardTitle className="text-lg sm:text-xl">Status da Validação</CardTitle>
         </div>
-        <CardDescription>
+        <CardDescription className="text-sm sm:text-base">
           Informações em tempo real sobre o reconhecimento facial
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
         {/* Status Principal */}
         <div className={`p-4 rounded-lg border ${getStatusColor()}`}>
           <div className="flex items-center gap-2 mb-2">
