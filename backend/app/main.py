@@ -120,27 +120,27 @@ async def register_user(
 
         # Criar usuário no banco
         print("DEBUG: Criando usuário no banco...")
+        # Adicionar embedding ao índice FAISS PRIMEIRO
+        print("DEBUG: Adicionando embedding ao FAISS...")
+        faiss_id = face_recognition.add_user_embedding(embedding, None)  # user_id será atualizado depois
+        print(f"DEBUG: Embedding adicionado ao FAISS com ID: {faiss_id}")
+
+        # Criar usuário no banco com o faiss_id correto
         user = User(
             name=name,
             email=email,
             embedding_hash=encrypted_embedding,
-            faiss_id=0,  # Será atualizado após adicionar ao FAISS
+            faiss_id=faiss_id,
         )
-
         db.add(user)
         db.commit()
         db.refresh(user)
-        print(f"DEBUG: Usuário criado com ID: {user.id}")
+        print(f"DEBUG: Usuário criado com ID: {user.id}, faiss_id: {faiss_id}")
 
-        # Adicionar embedding ao índice FAISS
-        print("DEBUG: Adicionando embedding ao FAISS...")
-        faiss_id = face_recognition.add_user_embedding(embedding, user.id)
-        print(f"DEBUG: Embedding adicionado ao FAISS com ID: {faiss_id}")
-
-        # Atualizar faiss_id no banco
-        user.faiss_id = faiss_id
-        db.commit()
-        print("DEBUG: FAISS ID atualizado no banco")
+        # Atualizar mapeamento no FAISS com o user_id real
+        face_recognition.id_to_user[faiss_id] = user.id
+        face_recognition.save_faiss_index()
+        print("DEBUG: Mapeamento FAISS atualizado com user_id")
 
         return {
             "success": True,

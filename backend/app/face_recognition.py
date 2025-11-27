@@ -42,10 +42,19 @@ class FaceRecognitionSystem:
             # Continuar mesmo se os modelos não carregarem
         try:
             self.load_faiss_index()
+            # Se o índice estiver vazio, tentar reconstruir do banco
+            if self.faiss_index is None or self.faiss_index.ntotal == 0:
+                print("🔄 Índice FAISS vazio, tentando reconstruir do banco de dados...")
+                self.rebuild_index_from_database()
         except Exception as e:
             print(f"⚠️  Erro ao carregar índice FAISS: {e}")
             # Criar índice vazio se não conseguir carregar
             self._create_new_index()
+            # Tentar reconstruir do banco mesmo assim
+            try:
+                self.rebuild_index_from_database()
+            except Exception as rebuild_error:
+                print(f"⚠️  Não foi possível reconstruir índice do banco: {rebuild_error}")
 
     def load_models(self):
         """Carrega modelos InsightFace - Suporta GPU e CPU"""
@@ -305,8 +314,16 @@ class FaceRecognitionSystem:
         best_face = max(faces, key=lambda x: x["det_score"])
         return best_face["embedding"]
 
-    def add_user_embedding(self, embedding: np.ndarray, user_id: int) -> int:
-        """Adiciona embedding de usuário ao índice FAISS"""
+    def add_user_embedding(self, embedding: np.ndarray, user_id: Optional[int] = None) -> int:
+        """Adiciona embedding de usuário ao índice FAISS
+        
+        Args:
+            embedding: Embedding facial normalizado
+            user_id: ID do usuário no banco (pode ser None se ainda não foi criado)
+        
+        Returns:
+            faiss_id: ID do embedding no índice FAISS
+        """
         try:
             print(f"DEBUG FAISS: Adicionando embedding para user_id: {user_id}")
             print(f"DEBUG FAISS: Embedding shape: {embedding.shape}")
@@ -322,9 +339,10 @@ class FaceRecognitionSystem:
             self.faiss_index.add(embedding_normalized.reshape(1, -1))
             print(f"DEBUG FAISS: Embedding adicionado ao índice")
 
-            # Mapear ID do FAISS para ID do usuário
-            self.id_to_user[faiss_id] = user_id
-            print(f"DEBUG FAISS: Mapeamento criado: {faiss_id} -> {user_id}")
+            # Mapear ID do FAISS para ID do usuário (se fornecido)
+            if user_id is not None:
+                self.id_to_user[faiss_id] = user_id
+                print(f"DEBUG FAISS: Mapeamento criado: {faiss_id} -> {user_id}")
 
             self.next_faiss_id += 1
 
@@ -410,6 +428,91 @@ class FaceRecognitionSystem:
         if faiss_id in self.id_to_user:
             del self.id_to_user[faiss_id]
             self.save_faiss_index()
+
+    def rebuild_index_from_database(self):
+        """Reconstrói o índice FAISS a partir do banco de dados PostgreSQL"""
+        try:
+            from app.database import SessionLocal
+            from app.models import User
+            from app.encryption import encryption_manager
+            
+            print("🔄 Iniciando reconstrução do índice FAISS do banco de dados...")
+            
+            # Criar novo índice vazio
+            self._create_new_index()
+            
+            # Buscar todos os usuários ativos do banco, ordenados por faiss_id
+            db = SessionLocal()
+            try:
+                users = db.query(User).filter(User.is_active == True).order_by(User.faiss_id).all()
+                print(f"📊 Encontrados {len(users)} usuários no banco de dados")
+                
+                if len(users) == 0:
+                    print("ℹ️  Nenhum usuário encontrado no banco, índice permanece vazio")
+                    return
+                
+                # Preparar embeddings e mapeamento
+                embeddings_list = []
+                user_mapping = {}  # faiss_id -> user_id
+                
+                for user in users:
+                    try:
+                        # Descriptografar embedding
+                        embedding = encryption_manager.decrypt_embedding(user.embedding_hash)
+                        
+                        # Normalizar embedding
+                        embedding_normalized = embedding / np.linalg.norm(embedding)
+                        embeddings_list.append(embedding_normalized)
+                        
+                        # Mapear faiss_id do banco para user_id
+                        # IMPORTANTE: O FAISS adiciona sequencialmente, então a posição no array
+                        # corresponde ao índice no FAISS. Mas precisamos usar o faiss_id do banco
+                        # para manter compatibilidade. Vamos adicionar na ordem do faiss_id.
+                        user_mapping[len(embeddings_list) - 1] = user.id
+                        
+                        print(f"✅ Embedding do usuário {user.name} (ID: {user.id}, faiss_id: {user.faiss_id}) preparado")
+                    except Exception as e:
+                        print(f"⚠️  Erro ao processar usuário {user.name} (ID: {user.id}): {e}")
+                        import traceback
+                        traceback.print_exc()
+                        continue
+                
+                # Adicionar todos os embeddings de uma vez (mais eficiente)
+                if embeddings_list:
+                    embeddings_array = np.array(embeddings_list)
+                    self.faiss_index.add(embeddings_array)
+                    
+                    # Restaurar mapeamento id_to_user
+                    # A posição no índice FAISS corresponde à ordem de adição
+                    for idx, user_id in user_mapping.items():
+                        self.id_to_user[idx] = user_id
+                    
+                    # Atualizar next_faiss_id para o próximo disponível
+                    if self.id_to_user:
+                        self.next_faiss_id = max(self.id_to_user.keys()) + 1
+                    else:
+                        self.next_faiss_id = len(embeddings_list)
+                    
+                    # Salvar índice reconstruído
+                    self.save_faiss_index()
+                    
+                    print(f"✅ Índice FAISS reconstruído com sucesso! {len(embeddings_list)} embeddings adicionados")
+                    print(f"📊 Total de embeddings no índice: {self.faiss_index.ntotal}")
+                    print(f"🔑 Próximo faiss_id disponível: {self.next_faiss_id}")
+                    print(f"👥 Usuários mapeados: {len(self.id_to_user)}")
+                else:
+                    print("⚠️  Nenhum embedding válido encontrado para reconstruir o índice")
+                    
+            finally:
+                db.close()
+                
+        except ImportError as e:
+            print(f"⚠️  Não foi possível importar módulos do banco: {e}")
+            print("💡 Isso é normal se o banco ainda não estiver configurado")
+        except Exception as e:
+            print(f"❌ Erro ao reconstruir índice do banco: {e}")
+            import traceback
+            traceback.print_exc()
 
     def clear_index(self):
         """Limpa completamente o índice FAISS"""
