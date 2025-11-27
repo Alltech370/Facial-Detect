@@ -14,9 +14,15 @@ interface ConnectionTest {
 }
 
 export function ConnectionTest() {
+  // Detectar URL do backend baseado no ambiente
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 
+    (typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+      ? 'http://localhost:8000' 
+      : '');
+  
   const [tests, setTests] = useState<ConnectionTest[]>([
     { name: 'Backend API', url: '/api/stats', status: 'idle' },
-    { name: 'Backend Direct', url: 'http://localhost:8000/api/stats', status: 'idle' },
+    ...(backendUrl ? [{ name: 'Backend Direct', url: `${backendUrl}/api/stats`, status: 'idle' as const }] : []),
     { name: 'Frontend', url: '/', status: 'idle' },
   ]);
 
