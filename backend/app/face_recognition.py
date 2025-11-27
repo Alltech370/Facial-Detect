@@ -389,8 +389,11 @@ class FaceRecognitionSystem:
             # Verificar se está dentro do threshold
             if distance <= threshold:
                 user_id = self.id_to_user.get(best_index)
+                print(f"🔍 Reconhecimento: best_index={best_index}, distance={distance:.4f}, threshold={threshold:.4f}, user_id={user_id}")
+                print(f"🔍 Mapeamento disponível: {list(self.id_to_user.keys())}")
                 return user_id, distance
             else:
+                print(f"❌ Reconhecimento falhou: distance={distance:.4f} > threshold={threshold:.4f}")
                 return None, distance
 
         except Exception as e:
@@ -453,7 +456,9 @@ class FaceRecognitionSystem:
                 
                 # Preparar embeddings e mapeamento
                 embeddings_list = []
-                user_mapping = {}  # faiss_id -> user_id
+                # IMPORTANTE: Mapear posição no índice FAISS (sequencial 0,1,2...) para user_id
+                # Como adicionamos na ordem do faiss_id do banco, a posição = faiss_id do banco
+                position_to_user = []
                 
                 for user in users:
                     try:
@@ -464,11 +469,8 @@ class FaceRecognitionSystem:
                         embedding_normalized = embedding / np.linalg.norm(embedding)
                         embeddings_list.append(embedding_normalized)
                         
-                        # Mapear faiss_id do banco para user_id
-                        # IMPORTANTE: O FAISS adiciona sequencialmente, então a posição no array
-                        # corresponde ao índice no FAISS. Mas precisamos usar o faiss_id do banco
-                        # para manter compatibilidade. Vamos adicionar na ordem do faiss_id.
-                        user_mapping[len(embeddings_list) - 1] = user.id
+                        # Guardar user_id na mesma posição do array
+                        position_to_user.append(user.id)
                         
                         print(f"✅ Embedding do usuário {user.name} (ID: {user.id}, faiss_id: {user.faiss_id}) preparado")
                     except Exception as e:
@@ -483,9 +485,11 @@ class FaceRecognitionSystem:
                     self.faiss_index.add(embeddings_array)
                     
                     # Restaurar mapeamento id_to_user
-                    # A posição no índice FAISS corresponde à ordem de adição
-                    for idx, user_id in user_mapping.items():
-                        self.id_to_user[idx] = user_id
+                    # A posição no índice FAISS (0, 1, 2...) corresponde à ordem de adição
+                    # Como adicionamos na ordem do faiss_id do banco, posição = faiss_id do banco
+                    for position, user_id in enumerate(position_to_user):
+                        self.id_to_user[position] = user_id
+                        print(f"🔗 Mapeamento: posição FAISS {position} -> user_id {user_id}")
                     
                     # Atualizar next_faiss_id para o próximo disponível
                     if self.id_to_user:
@@ -500,6 +504,7 @@ class FaceRecognitionSystem:
                     print(f"📊 Total de embeddings no índice: {self.faiss_index.ntotal}")
                     print(f"🔑 Próximo faiss_id disponível: {self.next_faiss_id}")
                     print(f"👥 Usuários mapeados: {len(self.id_to_user)}")
+                    print(f"📋 Mapeamento completo: {self.id_to_user}")
                 else:
                     print("⚠️  Nenhum embedding válido encontrado para reconstruir o índice")
                     
@@ -536,11 +541,15 @@ class FaceRecognitionSystem:
             if self.faiss_index is None:
                 self.load_faiss_index()
             
+            # Verificar se o modelo está carregado
+            model_loaded = self.face_app is not None and self.faiss_index is not None
+            
             return {
                 "total_embeddings": self.faiss_index.ntotal if self.faiss_index else 0,
                 "registered_users": len(self.id_to_user),
                 "device": DEVICE,
                 "threshold": FACE_RECOGNITION_THRESHOLD,
+                "model_loaded": model_loaded,
             }
         except Exception as e:
             print(f"Erro ao obter estatísticas: {e}")
@@ -549,6 +558,7 @@ class FaceRecognitionSystem:
                 "registered_users": 0,
                 "device": DEVICE,
                 "threshold": FACE_RECOGNITION_THRESHOLD,
+                "model_loaded": False,
                 "error": str(e),
             }
 
@@ -576,6 +586,7 @@ except Exception as e:
                 "registered_users": 0,
                 "device": "error",
                 "threshold": 0.4,
+                "model_loaded": False,
                 "error": "Sistema não inicializado",
             }
         

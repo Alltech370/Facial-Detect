@@ -113,9 +113,11 @@ export function StatsGrid() {
                 <div className="text-2xl font-bold">
                   {value}{stat.suffix}
                 </div>
-                <Badge variant="outline" className="mt-2">
-                  {stats?.face_recognition.model_loaded ? 'Modelo Carregado' : 'Carregando...'}
-                </Badge>
+                {stats?.face_recognition && (
+                  <Badge variant="outline" className="mt-2">
+                    {stats.face_recognition.model_loaded ? 'Modelo Carregado' : 'Modelo Não Carregado'}
+                  </Badge>
+                )}
               </CardContent>
             </Card>
           </motion.div>

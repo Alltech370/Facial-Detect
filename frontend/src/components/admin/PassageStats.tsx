@@ -100,14 +100,16 @@ export function PassageStats() {
           })}
         </div>
         
-        <div className="mt-6 pt-6 border-t">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Status do Modelo</span>
-            <Badge variant={stats?.face_recognition.model_loaded ? 'default' : 'secondary'}>
-              {stats?.face_recognition.model_loaded ? 'Carregado' : 'Carregando...'}
-            </Badge>
+        {stats?.face_recognition && (
+          <div className="mt-6 pt-6 border-t">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Status do Modelo</span>
+              <Badge variant={stats.face_recognition.model_loaded ? 'default' : 'secondary'}>
+                {stats.face_recognition.model_loaded ? 'Carregado' : 'Não Carregado'}
+              </Badge>
+            </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

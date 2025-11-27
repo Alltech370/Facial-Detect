@@ -233,9 +233,15 @@ async def validate_face(request: Request, db: Session = Depends(get_db)):
 
         # Reconhecer face com tratamento de erro
         try:
+            print(f"🔍 DEBUG VALIDATE: Iniciando reconhecimento facial...")
+            print(f"🔍 DEBUG VALIDATE: Índice FAISS tem {face_recognition.faiss_index.ntotal if face_recognition.faiss_index else 0} embeddings")
+            print(f"🔍 DEBUG VALIDATE: Mapeamento tem {len(face_recognition.id_to_user)} usuários: {list(face_recognition.id_to_user.keys())}")
             user_id, distance = face_recognition.recognize_face(embedding)
+            print(f"🔍 DEBUG VALIDATE: Resultado - user_id={user_id}, distance={distance}")
         except Exception as e:
-            print(f"Erro no reconhecimento: {e}")
+            print(f"❌ Erro no reconhecimento: {e}")
+            import traceback
+            traceback.print_exc()
             user_id, distance = None, 1.0
 
         # Determinar se acesso foi concedido
