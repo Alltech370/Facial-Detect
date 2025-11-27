@@ -1,0 +1,60 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: facial-detect-backend-dev
+    gpus: all
+    ports:
+      - "8000:8000"
+    volumes:
+      # Montar código fonte para hot reload
+      - ./backend:/app
+      - ./config.py:/app/config.py
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./frontend:/app/frontend
+      - ./data/insightface:/root/.insightface
+    env_file:
+      - .env.docker
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - PYTHONPATH=/app
+      - DEV_MODE=true  # Flag para modo desenvolvimento
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: facial-detect-frontend-dev
+    ports:
+      - "80:80"
+    volumes:
+      # Montar arquivos do frontend para hot reload
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  default:
+    name: facial-detect-dev-network
