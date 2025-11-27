@@ -1,0 +1,26 @@
+# Configuração para deploy no Koyeb
+# O Koyeb detecta automaticamente o Dockerfile na raiz ou no diretório backend
+# Este arquivo é opcional, mas útil para configurações específicas
+
+services:
+  - name: facial-detect-backend
+    dockerfile: backend/Dockerfile
+    dockerfile_context: .
+    env:
+      - name: DEVICE
+        value: "cpu"  # Koyeb não oferece GPU por padrão
+      - name: ENCRYPTION_KEY
+        secret: true  # Configure no painel do Koyeb
+      - name: PORT
+        value: "8000"
+    regions:
+      - iad  # Região (ajuste conforme necessário)
+    instance:
+      type: nano  # Tipo de instância (nano, micro, small, medium, large)
+    healthcheck:
+      path: /
+      port: 8000
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
